@@ -1,31 +1,42 @@
-MTV Report Utility (mtv-report.sh)
+# MTV Report Utility (`mtv-report.sh`)
 
-Overview The mtv-report.sh script is a command-line utility designed to provide consolidated, real-time migration progress reports for VMware workloads being moved to OpenShift using the Migration Toolkit for Virtualization (MTV) (also known as the Konveyor Forklift Operator).
+## Overview
+
+The `mtv-report.sh` script is a command-line utility designed to provide **consolidated, real-time migration progress reports** for Virtual Machines workloads being moved to OpenShift using the **Migration Toolkit for Virtualization (MTV)** (also known as the Konveyor Forklift Operator). 
 
 While the native MTV UI is excellent for managing plans, this tool addresses the need for quick, high-level summaries across multiple migration plans, calculating aggregate totals for data transfer.
 
-The script leverages OpenShift's oc client and the powerful jq JSON processor to transform raw API status data into human-readable, actionable reports.
+The script leverages OpenShift's `oc` client and the powerful `jq` JSON processor to transform raw API status data into human-readable, actionable reports.
 
-Requirements OpenShift CLI (oc): Must be installed and configured to connect to your OpenShift cluster.
+## 🛠️ Requirements
 
-jq: The command-line JSON processor must be installed on your system.
+1.  **OpenShift CLI (`oc`):** Must be installed and configured to connect to your OpenShift cluster.
+2.  **`jq`:** The command-line JSON processor must be installed on your system.
+3.  **Permissions:** Your OpenShift user must have `get` permissions on `plans.forklift.konveyor.io` in the target namespace.
 
-Permissions: Your OpenShift user must have get permissions on plans.forklift.konveyor.io in the target namespace.
+## ⚙️ Setup
 
-Setup Save the Script: Save the provided Bash code into a file named mtv-report.sh.
+1.  **Save the Script:** Save the provided Bash code into a file named `mtv-report.sh`.
+2.  **Make it Executable:**
+    ```bash
+    chmod +x mtv-report.sh
+    ```
 
-Make it Executable:
+## 📋 Usage
 
-Future Enhancements (Roadmap) The script is highly flexible and can be extended using the existing oc and jq pipeline. Potential enhancements include:
+Run the script using `bash` or directly if you are in the directory. You must specify exactly one of the three primary flags.
 
-Custom Sorting (--sort-by):
+| Command | Description |
+| :--- | :--- |
+| `./mtv-report.sh --all` | Provides an aggregate report and individual VM status for **ALL** migration plans in the current namespace. |
+| `./mtv-report.sh --active` | Provides a report only for plans that are currently **Executing** (i.e., actively running data transfer). |
+| `./mtv-report.sh --plan planA,planB` | Provides a consolidated report for a comma-separated list of **specific plan names**. |
 
-Add flags to sort individual VM results by total size (--sort-by size), current completion percentage (--sort-by progress), or alphabetically by name.
+**Example Commands:**
 
-Status Filtering (--status):
+```bash
+# Get status for only two plans
+./mtv-report.sh --plan dev-group-oct25,prod-group-nov01
 
-Filter the individual VM list to only show non-completed VMs (--status running), failed VMs (--status failed), or fully completed VMs (--status completed).
-
-Output Formatting:
-
-Add an option to output the final data in CSV format for easy import into spreadsheets or monitoring tools.
+# Output for Active Plans (Shows overall progress and slow VMs)
+./mtv-report.sh --active
